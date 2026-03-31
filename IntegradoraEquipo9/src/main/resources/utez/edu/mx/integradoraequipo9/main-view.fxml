@@ -6,9 +6,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox spacing="10"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="utez.edu.mx.integradoraequipo9.controller.LibroController">
 
-</AnchorPane>
+    <TableView fx:id="tableLibros">
+
+        <columns>
+            <TableColumn fx:id="colIsbn" text="ISBN"/>
+            <TableColumn fx:id="colTitulo" text="Título"/>
+            <TableColumn fx:id="colAutor" text="Autor"/>
+            <TableColumn fx:id="colAnio" text="Año"/>
+            <TableColumn fx:id="colGenero" text="Género"/>
+            <TableColumn fx:id="colDisponible" text="Disponible"/>
+        </columns>
+
+    </TableView>
+
+    <HBox spacing="10">
+        <Button text="Nuevo" onAction="#agregarLibro"/>
+        <Button text="Editar" onAction="#editarLibro"/>
+        <Button text="Eliminar" onAction="#eliminarLibro"/>
+    </HBox>
+
+</VBox>
+
