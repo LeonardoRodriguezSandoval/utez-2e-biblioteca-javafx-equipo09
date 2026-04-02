@@ -3,12 +3,8 @@ package utez.edu.mx.integradoraequipo9.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 import utez.edu.mx.integradoraequipo9.model.Libro;
 
@@ -20,14 +16,81 @@ public class LibroController {
     private ObservableList<Libro> listaLibros = FXCollections.observableArrayList();
 
     @FXML
+    private TextField txtTitulo;
+
+    @FXML
+    private TextField txtAutor;
+
+    @FXML
+    private TextField txtAnio;
+
+    @FXML
+    private TextField txtGenero;
+
+    /**
+     * Metodo para agregar libro (se agrego la validacion para que no se puedan agregar libros vacios)
+     */
+
+    @FXML
     public void agregarLibro() {
-        Libro nuevo = new Libro("4", "Nuevo Libro", "Autor X", 2024, "Género", true);
+        String titulo = txtTitulo.getText();
+        String autor = txtAutor.getText();
+        String genero = txtGenero.getText();
+
+        int anio;
+        try {
+            anio = Integer.parseInt(txtAnio.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("El año debe ser un número");
+            return;
+        }
+
+        Libro nuevo = new Libro("4", titulo, autor, anio, genero, true);
+
         listaLibros.add(nuevo);
+
+        txtTitulo.clear();
+        txtAutor.clear();
+        txtAnio.clear();
+        txtGenero.clear();
     }
+
+    /**
+     * Metodo para editar un libro en la tabla,permite modificar el titulo,autor,año y genero del libro
+     */
 
     @FXML
     public void editarLibro() {
-        System.out.println("Editar");
+        Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
+
+        if (seleccionado != null) {
+            seleccionado.setTitulo(txtTitulo.getText());
+            seleccionado.setAutor(txtAutor.getText());
+            seleccionado.setGenero(txtGenero.getText());
+
+            try {
+                seleccionado.setAnio(Integer.parseInt(txtAnio.getText()));
+            } catch (NumberFormatException e) {
+                System.out.println("Valor invalido,porfavor introduzca un valor valido");
+            }
+
+            tableLibros.refresh();
+        }
+    }
+
+    /**
+     * Metodo para seleccionar un libro de la tabla
+     */
+
+    public void seleccionarLibro() {
+        Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
+
+        if (seleccionado != null) {
+            txtTitulo.setText(seleccionado.getTitulo());
+            txtAutor.setText(seleccionado.getAutor());
+            txtAnio.setText(String.valueOf(seleccionado.getAnio()));
+            txtGenero.setText(seleccionado.getGenero());
+        }
     }
 
     /**
@@ -68,9 +131,7 @@ public class LibroController {
         colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
 
         listaLibros.addAll(
-                new Libro("1", "Harry Potter", "Rowling", 2001, "Fantasía", true),
-                new Libro("2", "1984", "Orwell", 1949, "Distopía", true),
-                new Libro("3", "It", "Stephen King", 1986, "Terror", false)
+                new Libro("1", "Libro de prueba", "yo", 2001, "Fantasía", true)
         );
 
         tableLibros.setItems(listaLibros);

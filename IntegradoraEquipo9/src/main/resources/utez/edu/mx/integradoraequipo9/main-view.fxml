@@ -11,7 +11,7 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="utez.edu.mx.integradoraequipo9.controller.LibroController">
 
-    <TableView fx:id="tableLibros">
+    <TableView fx:id="tableLibros" onMouseClicked="#seleccionarLibro">
 
         <columns>
             <TableColumn fx:id="colIsbn" text="ISBN"/>
@@ -23,6 +23,13 @@
         </columns>
 
     </TableView>
+
+    <HBox spacing="10">
+        <TextField fx:id="txtTitulo" promptText="Título"/>
+        <TextField fx:id="txtAutor" promptText="Autor"/>
+        <TextField fx:id="txtAnio" promptText="Año"/>
+        <TextField fx:id="txtGenero" promptText="Genero"/>
+    </HBox>
 
     <HBox spacing="10">
         <Button text="Nuevo" onAction="#agregarLibro"/>
