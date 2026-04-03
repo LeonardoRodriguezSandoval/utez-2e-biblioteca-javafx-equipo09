@@ -12,7 +12,7 @@ public class LibroController {
 
     @FXML
     private TableView<Libro> tableLibros;
-
+    private int contadorId = 1;
     private ObservableList<Libro> listaLibros = FXCollections.observableArrayList();
 
     @FXML
@@ -29,24 +29,34 @@ public class LibroController {
 
     /**
      * Metodo para agregar libro (se agrego la validacion para que no se puedan agregar libros vacios)
+     *
+     * Valida el año y genera un ID
      */
 
     @FXML
     public void agregarLibro() {
+
         String titulo = txtTitulo.getText();
         String autor = txtAutor.getText();
         String genero = txtGenero.getText();
 
+        if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty() || txtAnio.getText().isEmpty()) {
+            System.out.println("Llena todos los campos");
+            return;
+        }
+
         int anio;
+
         try {
             anio = Integer.parseInt(txtAnio.getText());
         } catch (NumberFormatException e) {
             System.out.println("El año debe ser un número");
             return;
         }
+        String isbn = String.valueOf(contadorId);
+        contadorId++;
 
-        Libro nuevo = new Libro("4", titulo, autor, anio, genero, true);
-
+        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
         listaLibros.add(nuevo);
 
         txtTitulo.clear();
@@ -57,24 +67,38 @@ public class LibroController {
 
     /**
      * Metodo para editar un libro en la tabla,permite modificar el titulo,autor,año y genero del libro
+     *
+     * Se agregó validación de campos vacíos y del año
+     * Solo deja editar cuando hay un libro seleccionado
      */
-
     @FXML
     public void editarLibro() {
         Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
 
-        if (seleccionado != null) {
-            seleccionado.setTitulo(txtTitulo.getText());
-            seleccionado.setAutor(txtAutor.getText());
-            seleccionado.setGenero(txtGenero.getText());
+        if (seleccionado == null) {
+            System.out.println("Selecciona un libro para editar");
+            return;
+        }
 
-            try {
-                seleccionado.setAnio(Integer.parseInt(txtAnio.getText()));
-            } catch (NumberFormatException e) {
-                System.out.println("Valor invalido,porfavor introduzca un valor valido");
-            }
+        String titulo = txtTitulo.getText();
+        String autor = txtAutor.getText();
+        String genero = txtGenero.getText();
 
+        if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty() || txtAnio.getText().isEmpty()) {
+            System.out.println("Llena todos los campos");
+            return;
+        }
+
+        try {
+            int anio = Integer.parseInt(txtAnio.getText());
+            seleccionado.setTitulo(titulo);
+            seleccionado.setAutor(autor);
+            seleccionado.setGenero(genero);
+            seleccionado.setAnio(anio);
             tableLibros.refresh();
+            System.out.println("Libro editado correctamente");
+        } catch (NumberFormatException e) {
+            System.out.println("El año debe ser un número");
         }
     }
 
