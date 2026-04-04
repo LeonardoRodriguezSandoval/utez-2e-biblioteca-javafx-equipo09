@@ -37,5 +37,8 @@
         <Button text="Eliminar" onAction="#eliminarLibro"/>
     </HBox>
 
+    <Label fx:id="lblMensaje" text="" style="-fx-text-fill: red;" />
+    <Label fx:id="lblMensajeExito" text="" style="-fx-text-fill: green;" />
+
 </VBox>
 

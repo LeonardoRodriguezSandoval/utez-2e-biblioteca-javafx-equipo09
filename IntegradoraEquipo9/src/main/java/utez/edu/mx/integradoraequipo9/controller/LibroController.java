@@ -8,6 +8,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import utez.edu.mx.integradoraequipo9.model.Libro;
 
+import java.util.Optional;
+
 public class LibroController {
 
     @FXML
@@ -27,42 +29,100 @@ public class LibroController {
     @FXML
     private TextField txtGenero;
 
+    @FXML
+    private Label lblMensaje;
+
+    @FXML
+    private Label lblMensajeExito;
+
+    /**
+     * Metodo para mostrar alerta,se reutilizara en otros metodos
+     * @param titulo
+     * @param mensaje
+     */
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    /**
+     * Metodo para limpiar los campos
+     */
+    private void limpiarCampos() {
+        txtTitulo.clear();
+        txtAutor.clear();
+        txtAnio.clear();
+        txtGenero.clear();
+    }
+
+    /**
+     *  Metodo para validar campos vacios
+     *
+     */
+    private boolean camposVacios() {
+        return txtTitulo.getText().isEmpty()
+                || txtAutor.getText().isEmpty()
+                || txtGenero.getText().isEmpty()
+                || txtAnio.getText().isEmpty();
+    }
+
+    /**
+     * Metodo para obtener un año valido
+     *
+     */
+    private Integer obtenerAnio() {
+        try {
+            return Integer.parseInt(txtAnio.getText());
+        } catch (NumberFormatException e) {
+            lblMensaje.setText("El año debe ser numerico");
+            return null;
+        }
+    }
+
+    /**
+     * Metodo para obtener datos(Evita repetir la logica)
+     *
+     */
+    private String[] obtenerDatos() {
+        String titulo = txtTitulo.getText();
+        String autor = txtAutor.getText();
+        String genero = txtGenero.getText();
+
+        return new String[]{titulo, autor, genero};
+    }
+
     /**
      * Metodo para agregar libro (se agrego la validacion para que no se puedan agregar libros vacios)
      *
      * Valida el año y genera un ID
      */
-
     @FXML
     public void agregarLibro() {
 
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String genero = txtGenero.getText();
+        String[] datos = obtenerDatos();
+        String titulo = datos[0];
+        String autor = datos[1];
+        String genero = datos[2];
 
-        if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty() || txtAnio.getText().isEmpty()) {
-            System.out.println("Llena todos los campos");
+        if (camposVacios()) {
+            lblMensaje.setText("Llena todos los campos");
             return;
         }
 
-        int anio;
+        Integer anio = obtenerAnio();
+        if (anio == null) return;
 
-        try {
-            anio = Integer.parseInt(txtAnio.getText());
-        } catch (NumberFormatException e) {
-            System.out.println("El año debe ser un número");
-            return;
-        }
         String isbn = String.valueOf(contadorId);
         contadorId++;
 
         Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
         listaLibros.add(nuevo);
 
-        txtTitulo.clear();
-        txtAutor.clear();
-        txtAnio.clear();
-        txtGenero.clear();
+        limpiarCampos();
+
     }
 
     /**
@@ -76,30 +136,31 @@ public class LibroController {
         Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
 
         if (seleccionado == null) {
-            System.out.println("Selecciona un libro para editar");
+            lblMensaje.setText("Primero debes de selecionar un libro a editar");
             return;
         }
 
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String genero = txtGenero.getText();
-
-        if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty() || txtAnio.getText().isEmpty()) {
-            System.out.println("Llena todos los campos");
+        if (camposVacios()) {
+            lblMensaje.setText("Llena todos los campos");
             return;
         }
 
-        try {
-            int anio = Integer.parseInt(txtAnio.getText());
-            seleccionado.setTitulo(titulo);
-            seleccionado.setAutor(autor);
-            seleccionado.setGenero(genero);
-            seleccionado.setAnio(anio);
-            tableLibros.refresh();
-            System.out.println("Libro editado correctamente");
-        } catch (NumberFormatException e) {
-            System.out.println("El año debe ser un número");
-        }
+        Integer anio = obtenerAnio();
+        if (anio == null) return;
+
+        String[] datos = obtenerDatos();
+        String titulo = datos[0];
+        String autor = datos[1];
+        String genero = datos[2];
+
+        seleccionado.setTitulo(titulo);
+        seleccionado.setAutor(autor);
+        seleccionado.setGenero(genero);
+        seleccionado.setAnio(anio);
+
+        tableLibros.refresh();
+
+        lblMensajeExito.setText("Libro editado correctamente");
     }
 
     /**
@@ -122,12 +183,23 @@ public class LibroController {
      */
     @FXML
     public void eliminarLibro() {
-        Libro libro = tableLibros.getSelectionModel().getSelectedItem();
+        Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
 
-        if (libro != null) {
-            listaLibros.remove(libro);
-        } else {
-            System.out.println("Selecciona un libro");
+        if (seleccionado == null) {
+            mostrarAlerta("Error", "Selecciona un libro para eliminar");
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirma la eliminacion");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Seguro que deseas eliminar este libro?");
+
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            listaLibros.remove(seleccionado);
+            mostrarAlerta("Éxito", "Libro eliminado correctamente");
         }
     }
 
