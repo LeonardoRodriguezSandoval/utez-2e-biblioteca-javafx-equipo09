@@ -35,6 +35,8 @@
         <Button text="Nuevo" onAction="#agregarLibro"/>
         <Button text="Editar" onAction="#editarLibro"/>
         <Button text="Eliminar" onAction="#eliminarLibro"/>
+        <Button text="Ver detalle" onAction="#verDetalleLibro"/>
+        <Button text="Exportar reporte" onAction="#exportarReporte"/>
     </HBox>
 
     <Label fx:id="lblMensaje" text="" style="-fx-text-fill: red;" />

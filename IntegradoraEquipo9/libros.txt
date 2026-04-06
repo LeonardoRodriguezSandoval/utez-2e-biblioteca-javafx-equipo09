@@ -1,0 +1,3 @@
+1,Planeta Vegeta,Vegeta777,2012,Fantasia,true
+2,Dune,Frank Herbert,1965,Fantasia,true
+3,Gachiakuta,Kei,2025,Fantasia,true

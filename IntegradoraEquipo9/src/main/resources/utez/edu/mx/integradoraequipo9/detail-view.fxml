@@ -6,9 +6,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox spacing="10" alignment="CENTER"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="utez.edu.mx.integradoraequipo9.controller.DetailController">
 
-</AnchorPane>
+    <Label fx:id="lblIsbn"/>
+    <Label fx:id="lblTitulo"/>
+    <Label fx:id="lblAutor"/>
+    <Label fx:id="lblAnio"/>
+    <Label fx:id="lblGenero"/>
+    <Label fx:id="lblDisponible"/>
+
+    <Button text="Regresar" onAction="#regresar"/>
+
+</VBox>

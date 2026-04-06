@@ -3,14 +3,21 @@ package utez.edu.mx.integradoraequipo9.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import javafx.stage.Stage;
 import utez.edu.mx.integradoraequipo9.model.Libro;
+import utez.edu.mx.integradoraequipo9.service.LibroService;
 
 import java.util.Optional;
 
 public class LibroController {
+
+    private LibroService libroService = new LibroService();
 
     @FXML
     private TableView<Libro> tableLibros;
@@ -75,9 +82,19 @@ public class LibroController {
      */
     private Integer obtenerAnio() {
         try {
-            return Integer.parseInt(txtAnio.getText());
+            int anio = Integer.parseInt(txtAnio.getText());
+
+            int anioActual = java.time.Year.now().getValue();
+
+            if (anio < 1500 || anio > anioActual) {
+                lblMensaje.setText("El año debe estar entre 1500 y " + anioActual);
+                return null;
+            }
+
+            return anio;
+
         } catch (NumberFormatException e) {
-            lblMensaje.setText("El año debe ser numerico");
+            lblMensaje.setText("El año debe ser un valor numerico");
             return null;
         }
     }
@@ -95,8 +112,35 @@ public class LibroController {
     }
 
     /**
+     * Metodo para validar duplicados por ISBN
+     * @param isbn
+     * @return true
+     */
+    private boolean existeIsbn(String isbn) {
+        for (Libro l : listaLibros) {
+            if (l.getIsbn().equals(isbn)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void actualizarContador() {
+        int max = 0;
+
+        for (Libro l : listaLibros) {
+            int id = Integer.parseInt(l.getIsbn());
+            if (id > max) {
+                max = id;
+            }
+        }
+
+        contadorId = max + 1;
+    }
+
+    /**
      * Metodo para agregar libro (se agrego la validacion para que no se puedan agregar libros vacios)
-     *
+     * Se agrego validacion al numero minimo de caracteres que debe tener el titulo y el autor
      * Valida el año y genera un ID
      */
     @FXML
@@ -107,21 +151,33 @@ public class LibroController {
         String autor = datos[1];
         String genero = datos[2];
 
-        if (camposVacios()) {
-            lblMensaje.setText("Llena todos los campos");
+        if (!libroService.camposValidos(titulo, autor, genero)) {
+            lblMensaje.setText("Datos inválidos,porfavor introduzca los datos de nuevo (titulo minimo 3 caracteres,autor minimo 3 caracteres");
             return;
         }
 
         Integer anio = obtenerAnio();
         if (anio == null) return;
 
+        if (!libroService.anioValido(anio)) {
+            lblMensaje.setText("Año inválido,el año debe de estar entre un rango de 1500 a el año actual");
+            return;
+        }
+
         String isbn = String.valueOf(contadorId);
+
+        if (!libroService.isbnDisponible(isbn, listaLibros)) {
+            lblMensaje.setText("ISBN duplicado");
+            return;
+        }
+
         contadorId++;
 
         Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
-        listaLibros.add(nuevo);
 
         limpiarCampos();
+        listaLibros.add(nuevo);
+        libroService.guardarLibros(listaLibros);
 
     }
 
@@ -161,6 +217,8 @@ public class LibroController {
         tableLibros.refresh();
 
         lblMensajeExito.setText("Libro editado correctamente");
+
+        libroService.guardarLibros(listaLibros);
     }
 
     /**
@@ -201,6 +259,47 @@ public class LibroController {
             listaLibros.remove(seleccionado);
             mostrarAlerta("Éxito", "Libro eliminado correctamente");
         }
+
+        listaLibros.remove(seleccionado);
+        libroService.guardarLibros(listaLibros);
+    }
+
+    /**
+     * Metodo para ver los detalles de un libro en una ventana por separado
+     */
+    @FXML
+    public void verDetalleLibro() {
+        Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
+
+        if (seleccionado == null) {
+            System.out.println("Selecciona un libro");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/utez/edu/mx/integradoraequipo9/detail-view.fxml"));
+            Parent root = loader.load();
+
+            DetailController controller = loader.getController();
+            controller.setLibro(seleccionado);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Detalle del libro");
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para exportar un reporte de todos los libros actuales
+     */
+    @FXML
+    public void exportarReporte() {
+        libroService.exportarReporte(listaLibros);
+        lblMensaje.setText("Reporte exportado correctamente");
     }
 
     @FXML
@@ -226,10 +325,10 @@ public class LibroController {
         colGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
         colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
 
-        listaLibros.addAll(
-                new Libro("1", "Libro de prueba", "yo", 2001, "Fantasía", true)
-        );
+        tableLibros.setItems(listaLibros);
 
+        listaLibros.addAll(libroService.cargarLibros());
+        actualizarContador();
         tableLibros.setItems(listaLibros);
     }
 }
