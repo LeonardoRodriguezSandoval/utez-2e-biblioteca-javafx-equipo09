@@ -90,26 +90,6 @@ public class LibroService {
         }
     }
 
-    public boolean camposValidos(String titulo, String autor, String genero) {
-        return titulo != null && titulo.trim().length() >= 3 &&
-                autor != null && autor.trim().length() >= 3 &&
-                genero != null && !genero.trim().isEmpty();
-    }
-
-    public boolean anioValido(int anio) {
-        int actual = Year.now().getValue();
-        return anio >= 1500 && anio <= actual;
-    }
-
-    public boolean isbnDisponible(String isbn, List<Libro> lista) {
-        for (Libro l : lista) {
-            if (l.getIsbn().equals(isbn)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public int obtenerSiguienteId(List<Libro> lista) {
         int max = 0;
 

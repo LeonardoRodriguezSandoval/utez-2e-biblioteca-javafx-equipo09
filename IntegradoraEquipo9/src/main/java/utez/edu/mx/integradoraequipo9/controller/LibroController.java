@@ -55,76 +55,6 @@ public class LibroController {
         alert.showAndWait();
     }
 
-    /**
-     * Metodo para limpiar los campos
-     */
-    private void limpiarCampos() {
-        txtTitulo.clear();
-        txtAutor.clear();
-        txtAnio.clear();
-        txtGenero.clear();
-    }
-
-    /**
-     *  Metodo para validar campos vacios
-     *
-     */
-    private boolean camposVacios() {
-        return txtTitulo.getText().isEmpty()
-                || txtAutor.getText().isEmpty()
-                || txtGenero.getText().isEmpty()
-                || txtAnio.getText().isEmpty();
-    }
-
-    /**
-     * Metodo para obtener un año valido
-     *
-     */
-    private Integer obtenerAnio() {
-        try {
-            int anio = Integer.parseInt(txtAnio.getText());
-
-            int anioActual = java.time.Year.now().getValue();
-
-            if (anio < 1500 || anio > anioActual) {
-                lblMensaje.setText("El año debe estar entre 1500 y " + anioActual);
-                return null;
-            }
-
-            return anio;
-
-        } catch (NumberFormatException e) {
-            lblMensaje.setText("El año debe ser un valor numerico");
-            return null;
-        }
-    }
-
-    /**
-     * Metodo para obtener datos(Evita repetir la logica)
-     *
-     */
-    private String[] obtenerDatos() {
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String genero = txtGenero.getText();
-
-        return new String[]{titulo, autor, genero};
-    }
-
-    /**
-     * Metodo para validar duplicados por ISBN
-     * @param isbn
-     * @return true
-     */
-    private boolean existeIsbn(String isbn) {
-        for (Libro l : listaLibros) {
-            if (l.getIsbn().equals(isbn)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void actualizarContador() {
         int max = 0;
 
@@ -139,46 +69,79 @@ public class LibroController {
     }
 
     /**
+     * Metodo para abrir la pantalla del formulario en donde se realiza la edicion o adicion de un libro
+     * @param libro
+     */
+    private void abrirFormulario(Libro libro) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/utez/edu/mx/integradoraequipo9/form-view.fxml")
+            );
+
+            Parent root = loader.load();
+
+            FormController controller = loader.getController();
+            controller.setMainController(this);
+
+            if (libro != null) {
+                controller.setLibro(libro);
+            }
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Formulario");
+            stage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para agregar un libro desde la pantalla del formulario
+     * @param titulo
+     * @param autor
+     * @param anio
+     * @param genero
+     */
+    public void agregarDesdeFormulario(String titulo, String autor, int anio, String genero) {
+
+        String isbn = String.valueOf(
+                libroService.obtenerSiguienteId(listaLibros)
+        );
+
+        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
+
+        listaLibros.add(nuevo);
+        libroService.guardarLibros(listaLibros);
+
+        tableLibros.refresh();
+    }
+
+    /**
+     * Metodo para guardar los cambios hechos en la pantalla del formulario
+     */
+    public void guardarCambios() {
+        libroService.guardarLibros(listaLibros);
+        tableLibros.refresh();
+    }
+
+    /**
+     * Metodo para actualizar la tabla
+     */
+    public void actualizarTabla() {
+        listaLibros.clear();
+        listaLibros.addAll(libroService.cargarLibros());
+    }
+
+    /**
      * Metodo para agregar libro (se agrego la validacion para que no se puedan agregar libros vacios)
      * Se agrego validacion al numero minimo de caracteres que debe tener el titulo y el autor
      * Valida el año y genera un ID
      */
     @FXML
     public void agregarLibro() {
-
-        String[] datos = obtenerDatos();
-        String titulo = datos[0];
-        String autor = datos[1];
-        String genero = datos[2];
-
-        if (!libroService.camposValidos(titulo, autor, genero)) {
-            lblMensaje.setText("Datos inválidos,porfavor introduzca los datos de nuevo (titulo minimo 3 caracteres,autor minimo 3 caracteres");
-            return;
-        }
-
-        Integer anio = obtenerAnio();
-        if (anio == null) return;
-
-        if (!libroService.anioValido(anio)) {
-            lblMensaje.setText("Año inválido,el año debe de estar entre un rango de 1500 a el año actual");
-            return;
-        }
-
-        String isbn = String.valueOf(contadorId);
-
-        if (!libroService.isbnDisponible(isbn, listaLibros)) {
-            lblMensaje.setText("ISBN duplicado");
-            return;
-        }
-
-        contadorId++;
-
-        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
-
-        limpiarCampos();
-        listaLibros.add(nuevo);
-        libroService.guardarLibros(listaLibros);
-
+        abrirFormulario(null);
     }
 
     /**
@@ -186,39 +149,20 @@ public class LibroController {
      *
      * Se agregó validación de campos vacíos y del año
      * Solo deja editar cuando hay un libro seleccionado
+     * Se modifico el metodo de editar libro para que ahora se edite en la pantalla del formulario
      */
     @FXML
     public void editarLibro() {
         Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
 
         if (seleccionado == null) {
-            lblMensaje.setText("Primero debes de selecionar un libro a editar");
+            lblMensaje.setText("Selecciona un libro");
             return;
         }
 
-        if (camposVacios()) {
-            lblMensaje.setText("Llena todos los campos");
-            return;
-        }
+        abrirFormulario(seleccionado);
 
-        Integer anio = obtenerAnio();
-        if (anio == null) return;
-
-        String[] datos = obtenerDatos();
-        String titulo = datos[0];
-        String autor = datos[1];
-        String genero = datos[2];
-
-        seleccionado.setTitulo(titulo);
-        seleccionado.setAutor(autor);
-        seleccionado.setGenero(genero);
-        seleccionado.setAnio(anio);
-
-        tableLibros.refresh();
-
-        lblMensajeExito.setText("Libro editado correctamente");
-
-        libroService.guardarLibros(listaLibros);
+        actualizarTabla();
     }
 
     /**
@@ -272,7 +216,7 @@ public class LibroController {
         Libro seleccionado = tableLibros.getSelectionModel().getSelectedItem();
 
         if (seleccionado == null) {
-            System.out.println("Selecciona un libro");
+            lblMensaje.setText("Selecciona un libro primero");
             return;
         }
 
