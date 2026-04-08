@@ -105,17 +105,20 @@ public class LibroController {
      * @param genero
      */
     public void agregarDesdeFormulario(String titulo, String autor, int anio, String genero) {
-
         String isbn = String.valueOf(
                 libroService.obtenerSiguienteId(listaLibros)
         );
-
+        //Validamos duplicados
+        for (Libro l : listaLibros) {
+            if (l.getIsbn().equals(isbn)) {
+                lblMensaje.setText("Error: ISBN duplicado");
+                return;
+            }
+        }
         Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
-
         listaLibros.add(nuevo);
         libroService.guardarLibros(listaLibros);
-
-        tableLibros.refresh();
+        actualizarTabla();
     }
 
     /**
