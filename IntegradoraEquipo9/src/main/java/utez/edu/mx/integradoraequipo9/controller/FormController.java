@@ -1,25 +1,30 @@
 package utez.edu.mx.integradoraequipo9.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utez.edu.mx.integradoraequipo9.model.Libro;
+import utez.edu.mx.integradoraequipo9.service.LibroService;
 
 import java.time.Year;
 
 public class FormController {
 
+    @FXML private TextField txtIsbn;
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
     @FXML private TextField txtAnio;
     @FXML private TextField txtGenero;
+    @FXML private CheckBox chkDisponible;
     @FXML private Label lblMensaje;
 
     private Libro libro;
     private boolean editando = false;
 
     private LibroController mainController;
+    private LibroService libroService = new LibroService();
 
     public void setMainController(LibroController controller) {
         this.mainController = controller;
@@ -29,18 +34,23 @@ public class FormController {
         this.libro = libro;
         this.editando = true;
 
+        txtIsbn.setText(libro.getIsbn());
+        txtIsbn.setDisable(true);
         txtTitulo.setText(libro.getTitulo());
         txtAutor.setText(libro.getAutor());
         txtAnio.setText(String.valueOf(libro.getAnio()));
         txtGenero.setText(libro.getGenero());
+        chkDisponible.setSelected(libro.isDisponible());
     }
 
     @FXML
     public void guardar() {
 
+        String isbn = txtIsbn.getText();
         String titulo = txtTitulo.getText();
         String autor = txtAutor.getText();
         String genero = txtGenero.getText();
+        boolean disponible = chkDisponible.isSelected();
 
         if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty()) {
             lblMensaje.setText("Llena todos los campos");
@@ -76,7 +86,22 @@ public class FormController {
             return;
         }
 
+        if (isbn.isEmpty()) {
+            lblMensaje.setText("El ISBN esta vacio porfavor introduce un valor con una longitud de 13 numeros");
+            return;
+        }
+
+        if (isbn.length() < 13) {
+            lblMensaje.setText("El ISBN debe tener al menos 13 caracteres");
+            return;
+        }
+
         if (editando) {
+            isbn = libro.getIsbn();
+        }
+
+        if (editando) {
+            libro.setIsbn(isbn);
             libro.setTitulo(titulo);
             libro.setAutor(autor);
             libro.setGenero(genero);
@@ -84,7 +109,7 @@ public class FormController {
 
             mainController.guardarCambios();
         } else {
-            mainController.agregarDesdeFormulario(titulo, autor, anio, genero);
+            mainController.agregarDesdeFormulario(isbn, titulo, autor, anio, genero, disponible);
         }
 
         cerrar();
