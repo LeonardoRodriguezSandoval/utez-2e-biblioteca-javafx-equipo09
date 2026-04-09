@@ -21,7 +21,6 @@ public class LibroController {
 
     @FXML
     private TableView<Libro> tableLibros;
-    private int contadorId = 1;
     private ObservableList<Libro> listaLibros = FXCollections.observableArrayList();
 
     @FXML
@@ -55,19 +54,6 @@ public class LibroController {
         alert.showAndWait();
     }
 
-    private void actualizarContador() {
-        int max = 0;
-
-        for (Libro l : listaLibros) {
-            int id = Integer.parseInt(l.getIsbn());
-            if (id > max) {
-                max = id;
-            }
-        }
-
-        contadorId = max + 1;
-    }
-
     /**
      * Metodo para abrir la pantalla del formulario en donde se realiza la edicion o adicion de un libro
      * @param libro
@@ -98,27 +84,22 @@ public class LibroController {
     }
 
     /**
-     * Metodo para agregar un libro desde la pantalla del formulario
+     * Metodo para agregar un libro desde la pantalla del formulario,se arreglo el metodo,ahora ya no pide el id y pide el ISBN
+     *
      * @param titulo
      * @param autor
+     * @param isbn
      * @param anio
      * @param genero
      */
-    public void agregarDesdeFormulario(String titulo, String autor, int anio, String genero) {
-        String isbn = String.valueOf(
-                libroService.obtenerSiguienteId(listaLibros)
-        );
-        //Validamos duplicados
-        for (Libro l : listaLibros) {
-            if (l.getIsbn().equals(isbn)) {
-                lblMensaje.setText("Error: ISBN duplicado");
-                return;
-            }
-        }
-        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, true);
+    public void agregarDesdeFormulario(String isbn, String titulo, String autor, int anio, String genero, boolean dispobible) {
+
+        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, dispobible);
+
         listaLibros.add(nuevo);
         libroService.guardarLibros(listaLibros);
-        actualizarTabla();
+
+        tableLibros.refresh();
     }
 
     /**
@@ -272,10 +253,22 @@ public class LibroController {
         colGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
         colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
 
+        colDisponible.setCellFactory(column -> new TableCell<Libro, Boolean>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item ? "Sí" : "No");
+                }
+            }
+        });
+
         tableLibros.setItems(listaLibros);
 
         listaLibros.addAll(libroService.cargarLibros());
-        actualizarContador();
         tableLibros.setItems(listaLibros);
     }
 }

@@ -70,7 +70,7 @@ public class LibroService {
     public void exportarReporte(List<Libro> lista) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("reporte_catalogo.csv"))) {
 
-            writer.write("ISBN,Titulo,Autor,Año,Genero,Disponible");
+            writer.write("----ISBN----Titulo----Autor----Año----Genero----Disponible----");
             writer.newLine();
 
             for (Libro l : lista) {
@@ -90,18 +90,12 @@ public class LibroService {
         }
     }
 
-    public int obtenerSiguienteId(List<Libro> lista) {
-        int max = 0;
-
-        for (Libro l : lista) {
-            try {
-                int id = Integer.parseInt(l.getIsbn());
-                if (id > max) {
-                    max = id;
-                }
-            } catch (Exception ignored) {}
+    public boolean existeIsbn(String isbn) {
+        for (Libro libro : cargarLibros()) {
+            if (libro.getIsbn().equals(isbn)) {
+                return true;
+            }
         }
-
-        return max + 1;
+        return false;
     }
 }

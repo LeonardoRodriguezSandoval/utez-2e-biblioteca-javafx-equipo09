@@ -11,15 +11,17 @@
          <Font size="10.0" />
       </font></Label>
 
+    <TextField fx:id="txtIsbn" prefHeight="25.0" prefWidth="871.0" promptText="ISBN" />
     <TextField fx:id="txtTitulo" prefHeight="25.0" prefWidth="827.0" promptText="Título" />
     <TextField fx:id="txtAutor" promptText="Autor" />
     <TextField fx:id="txtAnio" promptText="Año" />
     <TextField fx:id="txtGenero" promptText="Género" />
+    <CheckBox fx:id="chkDisponible" text="Disponible" />
 
     <Label fx:id="lblMensaje" />
 
     <HBox spacing="10">
-        <Button onAction="#guardar" text="Guardar" />
+        <Button onAction="#guardar" style="-fx-background-color: lime green;" text="Guardar" />
         <Button onAction="#cancelar" text="Cancelar" />
     </HBox>
 

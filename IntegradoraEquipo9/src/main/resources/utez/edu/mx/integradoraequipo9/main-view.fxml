@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox spacing="10"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="utez.edu.mx.integradoraequipo9.controller.LibroController">
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utez.edu.mx.integradoraequipo9.controller.LibroController">
 
     <TableView fx:id="tableLibros" onMouseClicked="#seleccionarLibro">
 
         <columns>
-            <TableColumn fx:id="colIsbn" text="ISBN"/>
-            <TableColumn fx:id="colTitulo" text="Título"/>
-            <TableColumn fx:id="colAutor" text="Autor"/>
-            <TableColumn fx:id="colAnio" text="Año"/>
-            <TableColumn fx:id="colGenero" text="Género"/>
-            <TableColumn fx:id="colDisponible" text="Disponible"/>
+            <TableColumn fx:id="colIsbn" prefWidth="147.0" text="ISBN" />
+            <TableColumn fx:id="colTitulo" prefWidth="105.0" text="Título" />
+            <TableColumn fx:id="colAutor" prefWidth="99.0" text="Autor" />
+            <TableColumn fx:id="colAnio" prefWidth="95.0" text="Año" />
+            <TableColumn fx:id="colGenero" prefWidth="102.0" text="Género" />
+            <TableColumn fx:id="colDisponible" prefWidth="77.0" text="Disponible" />
         </columns>
 
     </TableView>
 
     <HBox spacing="10">
-        <TextField fx:id="txtTitulo" promptText="Título"/>
-        <TextField fx:id="txtAutor" promptText="Autor"/>
-        <TextField fx:id="txtAnio" promptText="Año"/>
-        <TextField fx:id="txtGenero" promptText="Genero"/>
+        <TextField fx:id="txtTitulo" promptText="Título" />
+        <TextField fx:id="txtAutor" promptText="Autor" />
+        <TextField fx:id="txtAnio" promptText="Año" />
+        <TextField fx:id="txtGenero" promptText="Genero" />
     </HBox>
 
     <HBox spacing="10">
-        <Button text="Nuevo" onAction="#agregarLibro"/>
-        <Button text="Editar" onAction="#editarLibro"/>
-        <Button text="Eliminar" onAction="#eliminarLibro"/>
-        <Button text="Ver detalle" onAction="#verDetalleLibro"/>
-        <Button text="Exportar reporte" onAction="#exportarReporte"/>
+        <Button onAction="#agregarLibro" text="Nuevo" />
+        <Button onAction="#editarLibro" text="Editar" />
+        <Button onAction="#eliminarLibro" style="-fx-background-color: red;" text="Eliminar" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+        <Button onAction="#verDetalleLibro" text="Ver detalle" />
+        <Button onAction="#exportarReporte" text="Exportar reporte" />
     </HBox>
 
-    <Label fx:id="lblMensaje" text="" style="-fx-text-fill: red;" />
-    <Label fx:id="lblMensajeExito" text="" style="-fx-text-fill: green;" />
+    <Label fx:id="lblMensaje" style="-fx-text-fill: red;" text="" />
+    <Label fx:id="lblMensajeExito" style="-fx-text-fill: green;" text="" />
 
 </VBox>
-
