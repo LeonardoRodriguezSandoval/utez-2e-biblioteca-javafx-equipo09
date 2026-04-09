@@ -84,7 +84,7 @@ public class LibroController {
     }
 
     /**
-     * Metodo para agregar un libro desde la pantalla del formulario
+     * Metodo para agregar un libro desde la pantalla del formulario,se arreglo el metodo,ahora ya no pide el id y pide el ISBN
      *
      * @param titulo
      * @param autor
