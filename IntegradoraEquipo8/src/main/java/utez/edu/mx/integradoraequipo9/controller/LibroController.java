@@ -84,6 +84,20 @@ public class LibroController {
     }
 
     /**
+     * Metodo para evitar duplicados de ISBN
+     * @param isbn
+     * @return true
+     */
+    public boolean existeIsbn(String isbn) {
+        for (Libro libro : listaLibros) {
+            if (libro.getIsbn().equals(isbn)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Metodo para agregar un libro desde la pantalla del formulario,se arreglo el metodo,ahora ya no pide el id y pide el ISBN
      *
      * @param titulo
@@ -92,9 +106,9 @@ public class LibroController {
      * @param anio
      * @param genero
      */
-    public void agregarDesdeFormulario(String isbn, String titulo, String autor, int anio, String genero, boolean dispobible) {
+    public void agregarDesdeFormulario(String isbn, String titulo, String autor, int anio, String genero, boolean disponible) {
 
-        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, dispobible);
+        Libro nuevo = new Libro(isbn, titulo, autor, anio, genero, disponible);
 
         listaLibros.add(nuevo);
         libroService.guardarLibros(listaLibros);
@@ -185,11 +199,10 @@ public class LibroController {
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             listaLibros.remove(seleccionado);
+            libroService.guardarLibros(listaLibros);
+            tableLibros.refresh();
             mostrarAlerta("Éxito", "Libro eliminado correctamente");
         }
-
-        listaLibros.remove(seleccionado);
-        libroService.guardarLibros(listaLibros);
     }
 
     /**
@@ -253,7 +266,7 @@ public class LibroController {
         colGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
         colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
 
-        colDisponible.setCellFactory(column -> new TableCell<Libro, Boolean>() {
+        colDisponible.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
@@ -269,6 +282,5 @@ public class LibroController {
         tableLibros.setItems(listaLibros);
 
         listaLibros.addAll(libroService.cargarLibros());
-        tableLibros.setItems(listaLibros);
     }
 }
