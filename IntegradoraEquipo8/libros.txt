@@ -1,5 +1,5 @@
-9786073194648,Dune,Frank Herbert,1965,Fantasia,true
-9781806770024,All Tomorrows,C.M.Kosemen,2006,Ciencia Ficcion,true
-9781840226447,The King in Yellow,Robert William Chambers,1895,Terror,true
-9780759298156,I Have No Mouth & I Must Scream,Harlan Ellison,1967,Ciencia ficcion,true
-9780765382030,The Three-body Problem,Liu Cixin,2006,Ciencia ficcion,true
+9786073194648|Dune|Frank Herbert|1965|Fantasia|true
+9781806770024|All Tomorrows|C.M.Kosemen|2006|Ciencia Ficcion|true
+9781840226447|The King in Yellow|Robert William Chambers|1895|Terror|true
+9780759298156|I Have No Mouth & I Must Scream|Harlan Ellison|1967|Ciencia ficcion|true
+9780765382030|The Three-body Problem|Liu Cixin|2006|Ciencia ficcion|true

@@ -46,14 +46,38 @@ public class FormController {
     @FXML
     public void guardar() {
 
-        String isbn = txtIsbn.getText();
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String genero = txtGenero.getText();
+        String isbn = txtIsbn.getText().trim();
+        String titulo = txtTitulo.getText().trim();
+        String autor = txtAutor.getText().trim();
+        String genero = txtGenero.getText().trim();
         boolean disponible = chkDisponible.isSelected();
 
-        if (titulo.isEmpty() || autor.isEmpty() || genero.isEmpty()) {
+        if (!txtTitulo.getText().equals(txtTitulo.getText().trim()) ||
+                !txtAutor.getText().equals(txtAutor.getText().trim()) ||
+                !txtGenero.getText().equals(txtGenero.getText().trim()) ||
+                !txtIsbn.getText().equals(txtIsbn.getText().trim())) {
+
+            lblMensaje.setText("No se permiten espacios al inicio o final");
+            return;
+        }
+
+        if (titulo.trim().isEmpty() || autor.trim().isEmpty() || genero.trim().isEmpty()) {
             lblMensaje.setText("Llena todos los campos");
+            return;
+        }
+
+        if (titulo.length() > 100){
+            lblMensaje.setText("El titulo es demasiado largo,solamente se permiten 100 caracteres");
+            return;
+        }
+
+        if (autor.length() > 100){
+            lblMensaje.setText("El nombre del autor es demasiado largo,solamente se permiten 100 caracteres");
+            return;
+        }
+
+        if (genero.length() > 100){
+            lblMensaje.setText("El genero es demasiado largo,solamente se permiten 100 caracteres");
             return;
         }
 
@@ -75,7 +99,7 @@ public class FormController {
         int anioActual = Year.now().getValue();
         int anio;
         try {
-            anio = Integer.parseInt(txtAnio.getText());
+            anio = Integer.parseInt(txtAnio.getText().trim());
         } catch (Exception e) {
             lblMensaje.setText("Año inválido");
             return;
@@ -86,7 +110,7 @@ public class FormController {
             return;
         }
 
-        if (isbn.isEmpty()) {
+        if (isbn.trim().isEmpty()) {
             lblMensaje.setText("El ISBN esta vacio porfavor introduce un valor con una longitud de 13 numeros");
             return;
         }
@@ -96,8 +120,9 @@ public class FormController {
             return;
         }
 
-        if (editando) {
-            isbn = libro.getIsbn();
+        if (!editando && mainController.existeIsbn(isbn)) {
+            lblMensaje.setText("Ya existe un libro con ese ISBN");
+            return;
         }
 
         if (editando) {
@@ -106,6 +131,7 @@ public class FormController {
             libro.setAutor(autor);
             libro.setGenero(genero);
             libro.setAnio(anio);
+            libro.setDisponible(disponible);
 
             mainController.guardarCambios();
         } else {

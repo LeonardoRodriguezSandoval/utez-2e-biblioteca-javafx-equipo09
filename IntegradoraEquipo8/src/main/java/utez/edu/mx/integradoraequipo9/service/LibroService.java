@@ -26,7 +26,10 @@ public class LibroService {
             String linea;
 
             while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split(",");
+
+                if (linea.trim().isEmpty()) continue;
+                String[] datos = linea.split("\\|");
+                if (datos.length < 6) continue;
 
                 Libro libro = new Libro(
                         datos[0],
@@ -41,7 +44,7 @@ public class LibroService {
             }
 
         } catch (IOException e) {
-            System.out.println("No se pudo leer el archivo");
+            System.out.println("Error al leer el archivo: " + e.getMessage());
         }
 
         return lista;
@@ -52,11 +55,11 @@ public class LibroService {
 
             for (Libro l : lista) {
                 writer.write(
-                        l.getIsbn() + "," +
-                                l.getTitulo() + "," +
-                                l.getAutor() + "," +
-                                l.getAnio() + "," +
-                                l.getGenero() + "," +
+                        l.getIsbn() + "|" +
+                                l.getTitulo() + "|" +
+                                l.getAutor() + "|" +
+                                l.getAnio() + "|" +
+                                l.getGenero() + "|" +
                                 l.isDisponible()
                 );
                 writer.newLine();
@@ -75,11 +78,11 @@ public class LibroService {
 
             for (Libro l : lista) {
                 writer.write(
-                        l.getIsbn() + "," +
-                                l.getTitulo() + "," +
-                                l.getAutor() + "," +
-                                l.getAnio() + "," +
-                                l.getGenero() + "," +
+                        l.getIsbn() + "|" +
+                                l.getTitulo() + "|" +
+                                l.getAutor() + "|" +
+                                l.getAnio() + "|" +
+                                l.getGenero() + "|" +
                                 l.isDisponible()
                 );
                 writer.newLine();
@@ -90,8 +93,8 @@ public class LibroService {
         }
     }
 
-    public boolean existeIsbn(String isbn) {
-        for (Libro libro : cargarLibros()) {
+    public boolean existeIsbn(String isbn, List<Libro> lista) {
+        for (Libro libro : lista) {
             if (libro.getIsbn().equals(isbn)) {
                 return true;
             }
